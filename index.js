@@ -6,7 +6,7 @@ var bodyParser = require('body-parser')
 var http = require('http').createServer(app);
 var io = require('socket.io')(http, {
     cors: {
-        origin: "http://smartrent.vagrant",
+        origin: "*",
         methods: ["GET", "POST"]
     }
 });
