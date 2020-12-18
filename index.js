@@ -131,9 +131,12 @@ app.post('/event', jsonParser, (req, res) => {
     res.json({"result" : true})
 });
 
-http.listen(3000, () => {
-    console.log('listening on *:3000');
-    logMsg('SERVER LISTENING ON *:3000');
+let cliArgsPort = process.argv.slice(3);
+let port = parseInt(cliArgsPort) ? parseInt(cliArgsPort) : 3000;
+
+http.listen(port, () => {
+    console.log('listening on *:' + port);
+    logMsg('SERVER LISTENING ON *:' + port);
 });
 
 
