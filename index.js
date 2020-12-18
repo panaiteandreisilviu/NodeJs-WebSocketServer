@@ -14,7 +14,6 @@ var io = require('socket.io')(http, {
 // --------------------------- WSS SERVER ---------------------------
 
 const userToSocketsMap = new Map();
-const socketIdToUserIdMap = new Map();
 
 io.on('connection', (socket) => {
     let userData = {};
@@ -23,22 +22,22 @@ io.on('connection', (socket) => {
     userData.full_name = socket.handshake.query.employee_full_name ;
 
     addClientToMap(userData, socket);
-    console.log("CONNECTED: ".padEnd(15, " ") + userData.user);
+    logMsg("CONNECTED: ".padEnd(15, " ") + userData.user);
 
     socket.userData = userData;
 
     socket.on('join-room', function (room) {
         socket.join(room);
-        console.log("ROOM JOINED: ".padEnd(15, " ") + userData.user + ' -> ' + room);
+        logMsg("ROOM JOINED: ".padEnd(15, " ") + userData.user + ' -> ' + room);
     });
 
     socket.on('disconnect', function() {
-        console.log("DISCONNECTED: ".padEnd(15, " ") + userData.user + ", " + socket.id);
+        logMsg("DISCONNECTED: ".padEnd(15, " ") + userData.user + ", " + socket.id);
         removeClientFromMap(socket.userData, socket);
     });
 });
 
-function addClientToMap(userData, socket){
+function addClientToMap(userData, socket) {
     if (!userToSocketsMap.has(userData.id)) {
         let userToSocket = {
             "userData" : userData,
@@ -46,7 +45,7 @@ function addClientToMap(userData, socket){
         };
         userToSocket.sockets.set(socket.id,socket);
         userToSocketsMap.set(userData.id, userToSocket);
-    } else{
+    } else {
         userToSocketsMap.get(userData.id).sockets.set(socket.id, socket);
     }
 }
@@ -75,19 +74,66 @@ app.post('/debug', jsonParser, (req, res) => {
     res.json({"result" : debugData})
 });
 
+app.post('/test-logging', jsonParser, (req, res) => {
+    let counter = 0;
+    let start = new Date();
+    let interval = setInterval(function () {
+        counter++;
+        logMsg("TESTING LOGS - " + counter + "/2000");
+        if (counter == 2000) {
+            let stop = new Date();
+            let duration = stop.getTime() - start.getTime();
+            //logMsg("DURATION: " + (duration / 1000).toFixed(2) + "s");
+            clearInterval(interval);
+        }
+    }, 1);
+
+    res.json({"result" : true});
+});
+
 app.post('/event', jsonParser, (req, res) => {
-    let postData = req.body
-    if(postData.token !== config.token) {
+    let requestBody = req.body
+    if(requestBody.token !== config.token) {
         let message = {"result" : "false", "message" : "Invalid authentication token"};
-        console.log(message);
         res.json(message)
     }
-    console.log(postData);
+
+    let rooms = requestBody.rooms ? requestBody.rooms : [];
+    let users = requestBody.users ? requestBody.users : [];
+    let event = requestBody.event;
+    let eventData = requestBody.data;
+
+    logMsg("SR EVENT: ".padEnd(15, " ") + event + " users: " + JSON.stringify(users) + " rooms: " + rooms + " data: " + JSON.stringify(eventData));
+
+    if(rooms.constructor === Array && rooms.length) {
+        rooms.map(function(room) {
+            io.to(room).emit(event, eventData)
+        });
+    } else if(users.constructor === Array && users.length) {
+        users.forEach(function(userId) {
+            userId = userId.toString();
+            logMsg(userId);
+            if(userToSocketsMap.has(userId)) {
+                logMsg(userId);
+                let userSockets = userToSocketsMap.get(userId).sockets;
+                logMsg("sockets:" + userToSocketsMap.get(userId).sockets.size);
+
+                userSockets.forEach(function (socket) {
+                    logMsg(event + " " + JSON.stringify(eventData) + " " + socket.id);
+                    socket.emit(event, eventData);
+                });
+            }
+        });
+    } else {
+        let message = {"result" : "false", "message" : ""};
+        res.json(message)
+    }
     res.json({"result" : true})
 });
 
 http.listen(3000, () => {
     console.log('listening on *:3000');
+    logMsg('SERVER LISTENING ON *:3000');
 });
 
 
@@ -131,7 +177,6 @@ function getDebugData() {
         });
     }
 
-
     for (const [roomName, userIds] of Object.entries(rooms)) {
         rooms[roomName] = Array.from(userIds);
     }
@@ -140,6 +185,10 @@ function getDebugData() {
     debugData.totalSockets = io.sockets.sockets.size;
 
     return debugData;
+}
+
+function logMsg(message) {
+    io.to("debug-room").emit("log-sent", message);
 }
 
 setInterval(function () {
