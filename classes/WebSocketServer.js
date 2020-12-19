@@ -108,6 +108,8 @@ class WebSocketServer {
     // ----------------------------------------------
 
     getDebugData() {
+        let instance = this;
+
         let debugData = {
             users : {}
 
@@ -115,7 +117,7 @@ class WebSocketServer {
         this.userToSocketsMap.forEach(function(value, key) {
             debugData.users[key] = {
                 userData : value.userData,
-                rooms : this.getRoomsForUser(value.sockets),
+                rooms : instance.getRoomsForUser(value.sockets),
                 socketCount : value.sockets.size
             };
         });
