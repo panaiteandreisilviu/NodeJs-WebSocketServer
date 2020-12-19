@@ -13,7 +13,7 @@ class WebSocketServer {
 
         this.io = require('socket.io')(http, {
             cors: {
-                origin: "http://smartrent.vagrant",
+                origin: true,
                 methods: ["GET", "POST"]
             }
         });
@@ -37,7 +37,7 @@ class WebSocketServer {
             userData.user = socket.handshake.query.employee_user ;
             userData.full_name = socket.handshake.query.employee_full_name ;
 
-            addClientToMap(userData, socket);
+            this.addClientToMap(userData, socket);
             this.logMsg("CONNECTED: ".padEnd(15, " ") + userData.user);
 
             socket.userData = userData;
