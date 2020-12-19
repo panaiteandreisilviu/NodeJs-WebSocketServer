@@ -64,7 +64,7 @@ class WebSocketServer {
     // ----------------------------------------------
 
     addClientToMap(userData, socket) {
-        if (!userToSocketsMap.has(userData.id)) {
+        if (!this.userToSocketsMap.has(userData.id)) {
             let userToSocket = {
                 "userData" : userData,
                 "sockets" : new Map()
@@ -80,7 +80,7 @@ class WebSocketServer {
 
     removeClientFromMap(userData, socket){
         if (this.userToSocketsMap.has(userData.id)) {
-            let socketsSet = userToSocketsMap.get(userData.id).sockets;
+            let socketsSet = this.userToSocketsMap.get(userData.id).sockets;
             socketsSet.delete(socket.id);
             if (socketsSet.size === 0 ) {
                 this.userToSocketsMap.delete(userData.id);
