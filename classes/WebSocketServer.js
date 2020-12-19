@@ -13,7 +13,7 @@ class WebSocketServer {
 
         this.io = require('socket.io')(http, {
             cors: {
-                origin: true,
+                origin: "http://smartrent.vagrant",
                 methods: ["GET", "POST"]
             }
         });
