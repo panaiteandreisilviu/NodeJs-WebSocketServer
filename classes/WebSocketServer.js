@@ -30,6 +30,7 @@ class WebSocketServer {
     // ----------------------------------------------
 
     initEvents() {
+        let instance = this;
 
         this.io.on('connection', (socket) => {
             let userData = {};
@@ -44,16 +45,15 @@ class WebSocketServer {
 
             socket.on('join-room', function (room) {
                 socket.join(room);
-                this.logMsg("ROOM JOINED: ".padEnd(15, " ") + userData.user + ' -> ' + room);
+                instance.logMsg("ROOM JOINED: ".padEnd(15, " ") + userData.user + ' -> ' + room);
             });
 
             socket.on('disconnect', function() {
-                this.logMsg("DISCONNECTED: ".padEnd(15, " ") + userData.user + ", " + socket.id);
-                this.removeClientFromMap(socket.userData, socket);
+                instance.logMsg("DISCONNECTED: ".padEnd(15, " ") + userData.user + ", " + socket.id);
+                instance.removeClientFromMap(socket.userData, socket);
             });
         });
 
-        let instance = this;
         setInterval(function () {
             let debugData = instance.getDebugData();
             instance.io.to("debug-room").emit("debug-data-sent", debugData);
