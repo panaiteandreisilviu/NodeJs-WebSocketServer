@@ -115,7 +115,7 @@ class WebSocketServer {
         this.userToSocketsMap.forEach(function(value, key) {
             debugData.users[key] = {
                 userData : value.userData,
-                rooms : getRoomsForUser(value.sockets),
+                rooms : this.getRoomsForUser(value.sockets),
                 socketCount : value.sockets.size
             };
         });
