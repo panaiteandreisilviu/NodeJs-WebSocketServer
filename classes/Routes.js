@@ -1,5 +1,5 @@
 const bodyParser = require('body-parser');
-const Response = require('Response');
+const Response = require('./Response');
 const config = require("../config.json");
 
 class Routes {
