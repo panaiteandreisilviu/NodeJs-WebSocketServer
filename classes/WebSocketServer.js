@@ -1,3 +1,4 @@
+const ChildProcess = require('child_process');
 
 class WebSocketServer {
 
@@ -63,6 +64,44 @@ class WebSocketServer {
 
     // ----------------------------------------------
 
+    sendEvent(requestBody) {
+        let self = this;
+
+        let rooms = requestBody.rooms ? requestBody.rooms : [];
+        let users = requestBody.users ? requestBody.users : [];
+        let event = requestBody.event;
+        let eventData = requestBody.data;
+
+        this.logMsg("SR EVENT: ".padEnd(15, " ") + event + " users: " + JSON.stringify(users) + " rooms: " + rooms + " data: " + JSON.stringify(eventData));
+
+        let isRoomsEvent = rooms.constructor === Array && rooms.length;
+        let isUsersEvent = users.constructor === Array && users.length;
+
+        if(isRoomsEvent) {
+            rooms.map(function(room) {
+                self.io.to(room).emit(event, eventData)
+            });
+            return true;
+        }
+        else if(isUsersEvent) {
+            users.forEach(function(userId) {
+                userId = userId.toString();
+                if(self.userToSocketsMap.has(userId)) {
+                    let userSockets = self.userToSocketsMap.get(userId).sockets;
+                    userSockets.forEach(function (socket) {
+                        socket.emit(event, eventData);
+                    });
+                }
+            });
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+
+    // ----------------------------------------------
+
     addClientToMap(userData, socket) {
         if (!this.userToSocketsMap.has(userData.id)) {
             let userToSocket = {
@@ -111,7 +150,10 @@ class WebSocketServer {
         let instance = this;
 
         let debugData = {
-            users : {}
+            users : {},
+            rooms : [],
+            totalSockets : 0,
+            serverLoad : 0,
 
         };
         this.userToSocketsMap.forEach(function(value, key) {
@@ -140,6 +182,9 @@ class WebSocketServer {
 
         debugData.rooms = rooms;
         debugData.totalSockets = this.io.sockets.sockets.size;
+
+        let result = ChildProcess.execSync('cat /proc/loadavg | cut -d " " -f 1');
+        debugData.serverLoad =(result * 100).toFixed(2);
 
         return debugData;
     }
