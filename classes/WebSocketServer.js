@@ -183,8 +183,13 @@ class WebSocketServer {
         debugData.rooms = rooms;
         debugData.totalSockets = this.io.sockets.sockets.size;
 
-        let result = ChildProcess.execSync('cat /proc/loadavg | cut -d " " -f 1');
-        debugData.serverLoad =(result * 100).toFixed(2);
+        let serverLoad = ChildProcess.execSync('cat /proc/loadavg | cut -d " " -f 1');
+        let totalMemory = ChildProcess.execSync('free | grep Mem | tr -s " " | cut -d " " -f 2');
+        let usedMemory = ChildProcess.execSync('free | grep Mem | tr -s " " | cut -d " " -f 3');
+
+        debugData.serverLoad = (serverLoad * 100).toFixed(2);
+        debugData.totalMemory = (totalMemory / 1000 / 1000).toFixed(2);
+        debugData.usedMemory = (usedMemory / 1000 / 1000).toFixed(2);
 
         return debugData;
     }
