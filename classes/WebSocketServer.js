@@ -186,7 +186,7 @@ class WebSocketServer {
         let serverLoad = ChildProcess.execSync('cat /proc/loadavg | cut -d " " -f 1');
         let totalMemory = ChildProcess.execSync('free | grep Mem | tr -s " " | cut -d " " -f 2');
         let usedMemory = ChildProcess.execSync('free | grep Mem | tr -s " " | cut -d " " -f 3');
-        let serverTraffic = ChildProcess.execSync("awk '/em1/ {i++; rx[i]=$2; tx[i]=$10}; END{print rx[2]-rx[1] ' ' tx[2]-tx[1]}' <(cat /proc/net/dev; sleep 1; cat /proc/net/dev)");
+        let serverTraffic = ChildProcess.execSync('awk "/ens3/ {i++; rx[i]=$2; tx[i]=$10}; END{print rx[2]-rx[1] " " tx[2]-tx[1]}" < (cat /proc/net/dev; sleep 1; cat /proc/net/dev)');
 
         debugData.serverLoad = (serverLoad * 100).toFixed(2);
         debugData.totalMemory = (totalMemory / 1000 / 1000).toFixed(2);
