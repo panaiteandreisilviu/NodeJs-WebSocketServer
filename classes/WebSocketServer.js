@@ -186,13 +186,11 @@ class WebSocketServer {
         let serverLoad = ChildProcess.execSync('cat /proc/loadavg | cut -d " " -f 1');
         let totalMemory = ChildProcess.execSync('free | grep Mem | tr -s " " | cut -d " " -f 2');
         let usedMemory = ChildProcess.execSync('free | grep Mem | tr -s " " | cut -d " " -f 3');
-        let serverTraffic = ChildProcess.execFileSync('sh ../serverTraffic.sh');
+        //let serverTraffic = ChildProcess.execFileSync('sh ../serverTraffic.sh');
 
         debugData.serverLoad = (serverLoad * 100).toFixed(2);
         debugData.totalMemory = (totalMemory / 1000 / 1000).toFixed(2);
         debugData.usedMemory = (usedMemory / 1000 / 1000).toFixed(2);
-        debugData.serverTraffic = serverTraffic.toString().split(' ');
-        console.log(debugData.serverTraffic);
 
         return debugData;
     }
