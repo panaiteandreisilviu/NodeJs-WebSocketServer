@@ -35,9 +35,12 @@ class WebSocketServer {
 
         this.io.on('connection', (socket) => {
             let userData = {};
-            userData.id = socket.handshake.query.employee_id ;
-            userData.user = socket.handshake.query.employee_user ;
-            userData.full_name = socket.handshake.query.employee_full_name ;
+            userData.id = socket.handshake.query.employee_id;
+            userData.user = socket.handshake.query.employee_user;
+            userData.full_name = socket.handshake.query.employee_full_name;
+            userData.ip_address = socket.handshake.query.ip_address;
+            userData.current_page = socket.handshake.query.current_page;
+            userData.connection_time = socket.handshake.query.connection_time;
 
             this.addClientToMap(userData, socket);
             this.logMsg("CONNECTED: ".padEnd(15, " ") + userData.user);
@@ -160,7 +163,8 @@ class WebSocketServer {
             debugData.users[key] = {
                 userData : value.userData,
                 rooms : instance.getRoomsForUser(value.sockets),
-                socketCount : value.sockets.size
+                socketCount : value.sockets.size,
+                connections : value.sockets.map(socket => socket.userData)
             };
         });
 
