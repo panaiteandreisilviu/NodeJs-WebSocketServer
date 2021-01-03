@@ -39,7 +39,6 @@ class WebSocketServer {
             userData.user = socket.handshake.query.employee_user;
             userData.full_name = socket.handshake.query.employee_full_name;
             userData.ip_address = socket.handshake.query.ip_address;
-            userData.current_page = socket.handshake.query.current_page;
             userData.connection_time = socket.handshake.query.connection_time;
 
             this.addClientToMap(userData, socket);
