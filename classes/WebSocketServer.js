@@ -157,14 +157,18 @@ class WebSocketServer {
             rooms : [],
             totalSockets : 0,
             serverLoad : 0,
-
         };
+
         this.userToSocketsMap.forEach(function(value, key) {
+            let connections = [];
+            value.sockets.forEach(function (socket) {
+                connections.push(socket.userData);
+            });
             debugData.users[key] = {
                 userData : value.userData,
                 rooms : instance.getRoomsForUser(value.sockets),
                 socketCount : value.sockets.size,
-                connections : value.sockets.map(socket => socket.userData)
+                connections : connections
             };
         });
 
