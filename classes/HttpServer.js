@@ -13,7 +13,7 @@ class HttpServer {
 
         let cliArgsPort = process.argv.slice(3);
 
-        let port = parseInt(cliArgsPort) ? parseInt(cliArgsPort) : 3000;
+        let port = parseInt(cliArgsPort) ? parseInt(cliArgsPort) : 10000;
 
         this.httpInstance.listen(port, () => {
             console.log('listening on *:' + port);
