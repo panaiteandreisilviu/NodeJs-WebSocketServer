@@ -14,8 +14,7 @@ class WebSocketServer {
 
         this.io = require('socket.io')(http, {
             cors: {
-                origin: true,
-                methods: ["GET", "POST"]
+                origin: '*',
             }
         });
 
