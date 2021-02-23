@@ -6,8 +6,10 @@ class HttpServer {
     #expressAppInstance;
 
     constructor() {
+        const cors = require('cors')
 
         this.expressAppInstance = require('express')();
+        this.expressAppInstance.use(cors);
 
         this.httpInstance = require('http').createServer(this.expressAppInstance);
 
