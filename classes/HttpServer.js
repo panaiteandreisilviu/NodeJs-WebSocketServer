@@ -24,7 +24,7 @@ class HttpServer {
         let credentials = {key: privateKey, cert: certificate};
 
         // Create server instance
-        this.httpInstance = require('http').createServer(credentials, this.expressAppInstance);
+        this.httpInstance = require('https').createServer(credentials, this.expressAppInstance);
 
         // CLI Params
         let cliArgsPort = process.argv.slice(3);
