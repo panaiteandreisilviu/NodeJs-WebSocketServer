@@ -22,7 +22,6 @@ class HttpServer {
             next();
         });
 
-
         if(!cliArgs.forcehttp) {
             // HTTPS Certificate
             let fs = require('fs');
