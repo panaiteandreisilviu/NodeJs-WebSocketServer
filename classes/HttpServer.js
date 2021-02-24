@@ -25,9 +25,10 @@ class HttpServer {
         if(!cliArgs.forcehttp) {
             // HTTPS Certificate
             let fs = require('fs');
-            let privateKey  = fs.readFileSync(config.ssl_key_path, 'utf8');
             let certificate = fs.readFileSync(config.ssl_cert_path, 'utf8');
-            let credentials = {key: privateKey, cert: certificate};
+            let chain = fs.readFileSync(config.ssl_chain_path, 'utf8');
+            let key  = fs.readFileSync(config.ssl_key_path, 'utf8');
+            let credentials = {key: key, cert: certificate, ca : chain};
             // Create server instance
             this.httpInstance = require('https').createServer(credentials, this.expressAppInstance);
         }
