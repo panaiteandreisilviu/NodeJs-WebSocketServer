@@ -1,3 +1,6 @@
 {
-  "token" : "TOKEN"
+  "token" : "TOKEN",
+  "default_port" : 3000,
+  "ssl_key_path" : "---",
+  "ssl_cert_path" : "---"
 }
