@@ -1,3 +1,4 @@
+const commandLineArgs = require('command-line-args')
 
 class CliArgs {
 
@@ -6,9 +7,23 @@ class CliArgs {
             { name: 'forcehttp', alias: 'h', type: Boolean },
             { name: 'port', alias: 'p', type: Number }
         ]
-        const commandLineArgs = require('command-line-args')
 
-        return commandLineArgs(optionDefinitions)
+        let defaults = {
+            forcehttp : false,
+            port : null
+        }
+
+        let cliArgs;
+        try {
+            cliArgs = commandLineArgs(optionDefinitions, { partial: true })
+        } catch (e) {
+            cliArgs = {};
+        }
+
+        let result = {};
+        Object.assign(result, defaults, cliArgs)
+        delete result._unknown;
+        return result;
     }
 
 }
